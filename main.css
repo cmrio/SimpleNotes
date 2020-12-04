@@ -1,0 +1,64 @@
+body {
+  margin: 0;
+  font-family: 'Bookman Old Style';
+  background-color: #f8f6f1;
+}
+      
+textarea.newnote {
+    width: 300px;
+    height: 300px;
+    resize: none;
+  }
+
+textarea.note {
+    width: 1000px;
+    height: 150px;
+    resize: none;
+  }
+
+table.notes {
+  font-family: "Bookman Old Style";
+  width: 1000px;
+  height: 600px;
+  border-spacing: 0;
+}
+table.notes th,
+  table.notes td,
+  table.notes tr,
+  table.notes thead,
+  table.notes tbody {
+    display: block;
+  }
+    
+    table.notes tr:after {
+      content: ' ';
+      display: block;
+      visibility: hidden;
+      clear: both;
+    }
+    
+    table.notes tbody {
+      background-color: white;
+      max-height: 600px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      
+    }
+    
+    table.notes tbody td {
+      max-height: 150px;
+      width: 1000px;
+      float: left;
+    }
+    
+    table.notes thead th {
+      height: 30px;
+      line-height: 30px;
+      width: 300px;
+      float: left;
+      border-right: 1px solid black;
+    }
+    
+tbody td:last-child{
+    border-right: none!important;
+  }
