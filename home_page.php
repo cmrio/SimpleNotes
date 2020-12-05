@@ -22,18 +22,21 @@ $pdo = new PDO($dsn, $user, $pass,[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION])
  if(($userdata['Hash_User'] !== $_COOKIE['hash']) or ($userdata['ID_User'] !== $_COOKIE['id'])){
    setcookie("id", "", time() - 3600*24*30*12, "/");
    setcookie("hash", "", time() - 3600*24*30*12, "/", null, null, true);
-   print "Хм, что-то не получилось";
+    echo '<script language="javascript">';
+    echo 'alert(Что-то не получилось, попробуйте ещё раз)';  
+    echo '</script>';
+	header("Location: login.php"); exit();
  }
    else {
 	 echo '<table width="100%">
 	        <tr>
 			 <td align="center" width="70%">
-			  <font color="#454545" size="6"><b>Your notes</b></font>
+			  <font color="#454545" size="6"><b>Ваши заметки</b></font>
 			 </td>
 			 <td align="right" width="30%">
-			  <font color="#454545" size="3"><b>You is enter as '.$userdata['Login_User'].'</b></font><br>
+			  <font color="#454545" size="3"><b>Добро пожаловать, '.$userdata['Login_User'].'</b></font><br>
 			   <form method="POST">
-			    <input name="logout" type="submit" value="Exit"><br><br>
+			    <input name="logout" type="submit" value="Выход"><br><br>
 			   </form>
 			 </td>
 			</tr>
@@ -53,10 +56,11 @@ $pdo = new PDO($dsn, $user, $pass,[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION])
 				if($i != 0) {
 					for($i = 0; $i < count($note); $i++) {
 					 echo '<form method="POST">
-                            <font color="#454545" size="3"<b>Date is: '.$note[$i][2].'</b></font>
-                            <input name="changenote" type="submit" value="Change">
-                            <input name="deletenote" type="submit" value="Delete">
-                             <textarea class="note" name="'.$note[$i][1].'" id="'.$note[$i][0].'" required>'.$note[$i][1].'</textarea>
+                            <font color="#454545" size="3"<b>Дата: '.$note[$i][2].'</b></font>
+                            <input name="changenote" type="submit" value="Изменить">
+                            <input name="deletenote" type="submit" value="Удалить"><br>
+							<input name="idnote" type="hidden" value='.$note[$i][0].'>
+                             <textarea class="note" name="textnote" required>'.$note[$i][1].'</textarea>
                            </form><br>';
 					}
 				}					
@@ -66,8 +70,8 @@ $pdo = new PDO($dsn, $user, $pass,[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION])
                         <table>
                          <tr>
                           <form method="POST">
-                           <textarea class="newnote" name="newnote" required placeholder="Type new note"></textarea><br>
-                           <input name="addnote" type="submit" value="Add note"><br><br>
+                           <textarea class="newnote" name="newnote" required placeholder="Введите новую заметку"></textarea><br>
+                           <input name="addnote" type="submit" value="Добавить"><br><br>
                           </form>
                          </tr>
                         </table>
@@ -80,7 +84,10 @@ $pdo = new PDO($dsn, $user, $pass,[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION])
  }
  
      else {
-		 print 'On cookie';
+		 echo '<script language="javascript">';
+          echo 'alert(Включите cookie)';  
+         echo '</script>';
+	     header("Location: login.php"); exit();
 	 }
 
  if(isset($_POST['addnote'])) {
@@ -93,14 +100,14 @@ $pdo = new PDO($dsn, $user, $pass,[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION])
  if(isset($_POST['changenote'])) {
   $sql = "Update notetbl SET Text_Note=?, Date_Note=? Where ID_Note=?";
   $stmt= $pdo->prepare($sql);
-   if($stmt->execute([$_POST['name'], date("Y-m-d"), $_POST['id']])) {
+ if($stmt->execute([$_POST['textnote'], date("Y-m-d"), $_POST['idnote']])) {
     header("Refresh: 0");
    }
  }
  if(isset($_POST['deletenote'])) {
   $sql = "Delete from notetbl Where ID_Note=?";
   $stmt= $pdo->prepare($sql);
-   if($stmt->execute([$_POST['id']])) {
+   if($stmt->execute([$_POST['idnote']])) {
     header('Refresh: 0');
    }
  }							  
@@ -110,20 +117,4 @@ $pdo = new PDO($dsn, $user, $pass,[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION])
   setcookie("hash", "", time() - 3600*24*30*12, "/",null,null,true);
   header("Location: login.php"); exit();
  }
-?>
-				  
-				  
-				  
-				  
-				  
-				  
-				  
-				  
-				  
-				  
-				  
-				  
-				  
-				  
-				  
-				  
+?>				  
