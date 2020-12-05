@@ -1,3 +1,10 @@
+<html>
+ <head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="main.css">
+ </head>
+ <body>
+
 <?php
 
 // Функция для генерации случайной строки
@@ -20,15 +27,17 @@ function generateCode($length=6) {
        $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
        $pdo = new PDO($dsn, $user, $pass,[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 
-if(isset($_POST['submit']))
+       $err = "";
+	   
+if(isset($_POST['log']))
 {
-    // Вытаскиваем из БД запись, у которой логин равняеться введенному
+    
     $sql = "Select ID_User,Pass_User From usertbl Where Login_User=?";
     $stmt= $pdo->prepare($sql);
     $stmt->execute([$_POST['login']]);
     $data = $stmt->fetch();
-
-    // Сравниваем пароли
+	
+   if(isset($data['Pass_User'])) {
     if($data['Pass_User'] === md5(md5($_POST['password'])))
     {
         // Генерируем случайное число и шифруем его
@@ -40,21 +49,49 @@ if(isset($_POST['submit']))
         $stmt= $pdo->prepare($sql);
         $stmt->execute([$hash,$data['ID_User']]);
 
-        // Ставим куки
-        setcookie("id", $data['ID_User'], time()+60*60*24*30, "/");
+        setcookie("id", $data['ID_User'], time()+60*60*24*30, "/"); 
         setcookie("hash", $hash, time()+60*60*24*30, "/", null, null, true);
-
-        // Переадресовываем браузер на страницу проверки нашего скрипта
-        header("Location: home_page.php"); exit();
-    }
+		
+		if (isset($_COOKIE['id']) and isset($_COOKIE['hash'])){
+	header("Location: home_page.php"); exit(); } else {
+		echo '<script>
+               alert( "Включите cookie" );
+               </script>';
+	}
+	}
+		
+   } 
     else
     {
-        print "Вы ввели неправильный логин/пароль";
+        $err = 'Вы ввели неправильный логин/пароль';
     }
 }
+
+if(isset($_POST['create']))
+{
+  header("Location: register.php"); exit();
+}
+
 ?>
-<form method="POST">
-Логин <input name="login" type="text" required><br>
-Пароль <input name="password" type="password" required><br>
-<input name="submit" type="submit" value="Войти">
-</form>
+  <table width ="100%" height="100%" >
+   <tr>
+    <td width="40%">
+    </td>
+    <td align = "left" valign="middle"">
+     <form method="POST">
+	   <?php
+	    echo '<b>'.$err.'</b>';
+	   ?><br><br>
+      Логин  <input name="login" type="text" required size="25"><br><br>
+      Пароль <input name="password" type="password" required size="25"><br><br>
+      <input name="log" type="submit" value="Войти">
+     </form>
+     <form method="POST">
+      <b>Создать новый аккаунт?</b>
+      <input name="create" type="submit" value="Создать">
+     </form>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>
