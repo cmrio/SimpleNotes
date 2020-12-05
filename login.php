@@ -1,5 +1,6 @@
 <html>
  <head>
+  <title>Вход</title>
   <meta charset="utf-8" />
   <link rel="stylesheet" href="main.css">
  </head>
@@ -7,7 +8,7 @@
 
 <?php
 
-// Функция для генерации случайной строки
+// Функция для генерации хэша
 function generateCode($length=6) {
     $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHI JKLMNOPRQSTUVWXYZ0123456789";
     $code = "";
@@ -18,14 +19,8 @@ function generateCode($length=6) {
     return $code;
 }
 
-// Соединямся с БД
-       $host = 'localhost';
-       $db   = 'notes_db';
-       $user = 'vitaliy';
-       $pass = '1234';
-       $charset = 'utf8';
-       $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-       $pdo = new PDO($dsn, $user, $pass,[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+// Коннект к БД
+       include 'PDO.php';
 
        $err = "";
 	   
@@ -52,19 +47,16 @@ if(isset($_POST['log']))
         setcookie("id", $data['ID_User'], time()+60*60*24*30, "/"); 
         setcookie("hash", $hash, time()+60*60*24*30, "/", null, null, true);
 		
-		if (isset($_COOKIE['id']) and isset($_COOKIE['hash'])){
-	header("Location: home_page.php"); exit(); } else {
-		echo '<script>
-               alert( "Включите cookie" );
-               </script>';
-	}
-	}
 		
-   } 
+	    header("Location: home_page.php"); exit();
+		
+	}		
+   
     else
     {
         $err = 'Вы ввели неправильный логин/пароль';
-    }
+	} 
+   }
 }
 
 if(isset($_POST['create']))
@@ -78,6 +70,7 @@ if(isset($_POST['create']))
     <td width="40%">
     </td>
     <td align = "left" valign="middle"">
+	 <font color="#454545" size="6"><b>Вход в аккаунт</b></font>
      <form method="POST">
 	   <?php
 	    echo '<b>'.$err.'</b>';
