@@ -1,3 +1,10 @@
+<html>
+ <head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="main.css">
+ </head>
+ <body>
+
 <?php
 
 // Функция для генерации случайной строки
@@ -20,9 +27,11 @@ function generateCode($length=6) {
        $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
        $pdo = new PDO($dsn, $user, $pass,[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]); 
 
+       $err = "";
+
 if(isset($_POST['registr']))
 {
-    $err = "";
+    
 
     // проверяем, не сущестует ли пользователя с таким именем
     $sql = "Select ID_User From usertbl Where Login_user=?";
@@ -52,7 +61,6 @@ if(isset($_POST['registr']))
         $stmt->execute([$_POST['login']]);
         $data = $stmt->fetch();
 
-        // Генерируем случайное число и шифруем его
         $hash = md5(generateCode(10));
 
         // Записываем в БД новый хеш авторизации
@@ -60,17 +68,18 @@ if(isset($_POST['registr']))
         $stmt= $pdo->prepare($sql);
         $stmt->execute([$hash,$data['ID_User']]);
 
-        // Ставим куки
+        
         setcookie("id", $data['ID_User'], time()+60*60*24*30, "/");
         setcookie("hash", $hash, time()+60*60*24*30, "/", null, null, true);
 
-        // Переадресовываем браузер на страницу проверки нашего скрипта
-        header("Location: home_page.php"); exit();
+        if (isset($_COOKIE['id']) and isset($_COOKIE['hash'])){
+	      header("Location: home_page.php"); exit(); } else {
+		      echo '<script>
+               alert( "Включите cookie" );
+              </script>';
+	}
 
-    }
-    else
-    {
-      print "<b>".$err."<br>";
+
     }
     
 }
@@ -79,17 +88,27 @@ if(isset($_POST['auth']))
 {
   header("Location: login.php"); exit();
 }
+
 ?>
-
-<form method="POST">
-
-Логин <input name="login" title="Длина 4-20 символов. Может содержать только буквы латинского алфавита" pattern="(?=.*[a-zA-Z]).{4,20}" type="text" required><br>
-
-Пароль <input name="password" title="Длина 6-20 символов. Должен содержать хотя бы одну букву верхнего регистра [A-Z] и хотя бы одну цифру [0-9]" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}" type="password" required><br>
-
-<input name="registr" type="submit" value="Зарегистрироваться"> <br>
-</form>
-<form method="POST">
-Уже есть аккаунт?
-<input name="auth" type="submit" value="Войти">
-</form>
+  <table width ="100%" height="100%" >
+   <tr>
+    <td width="40%">
+    </td>
+    <td align = "left" valign="middle"">
+     <form method="POST">
+	  <?php
+	   echo '<b>'.$err.'</b>';
+	  ?><br><br>
+      Логин  <input name="login" title="Длина 4-20 символов. Может содержать только буквы латинского алфавита" pattern="(?=.*[a-zA-Z]).{4,20}" type="text" required size="25"><br><br>
+      Пароль <input name="password" title="Длина 6-20 символов. Должен содержать хотя бы одну букву верхнего регистра [A-Z] и хотя бы одну цифру [0-9]" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}" type="password" required size="25"><br><br>
+      <input name="registr" type="submit" value="Создать аккаунт"> <br>
+     </form>
+     <form method="POST">
+      <b>Уже есть аккаунт?</b>
+      <input name="auth" type="submit" value="Войти">
+     </form>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>
