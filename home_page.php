@@ -1,17 +1,12 @@
 <html>
  <head>
+  <title>Главная страница</title>
   <meta charset="utf-8" />
   <link rel="stylesheet" href="main.css">
  </head>
  <body>
 <?php
-$host = 'localhost';
-$db   = 'notes_db';
-$user = 'vitaliy';
-$pass = '1234';
-$charset = 'utf8';
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$pdo = new PDO($dsn, $user, $pass,[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+include 'PDO.php';;
 
  if (isset($_COOKIE['id']) and isset($_COOKIE['hash'])){
   $sql = "Select * From usertbl Where ID_User=?";
@@ -83,12 +78,6 @@ $pdo = new PDO($dsn, $user, $pass,[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION])
    }
  }
  
-     else {
-		 echo '<script language="javascript">';
-          echo 'alert(Включите cookie)';  
-         echo '</script>';
-	     header("Location: login.php"); exit();
-	 }
 
  if(isset($_POST['addnote'])) {
   $sql = "INSERT INTO notetbl (Text_Note, Usr_ID, Date_Note) VALUES (?,?,?)";
@@ -117,4 +106,4 @@ $pdo = new PDO($dsn, $user, $pass,[PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION])
   setcookie("hash", "", time() - 3600*24*30*12, "/",null,null,true);
   header("Location: login.php"); exit();
  }
-?>				  
+?>
